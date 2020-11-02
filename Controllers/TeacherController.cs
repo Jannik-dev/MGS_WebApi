@@ -12,12 +12,12 @@ namespace MGS_Webservice.Controllers
 {
     public class TeacherController : ApiController
     {
-        List<Teacher> teachers = new List<Teacher>();
+        static string table = "Teachers";
 
         // GET: api/Teacher
         public string Get()
         {
-            List<int> ids = DB.AllIDs("Teachers");
+            List<int> ids = DB.AllIDs(table);
             List<Teacher> teachers = new List<Teacher>();
 
             foreach (int id in ids){
@@ -27,30 +27,37 @@ namespace MGS_Webservice.Controllers
             return JsonConvert.SerializeObject(teachers);
         }
 
-        // GET: api/Teacher/5
-        public Teacher Get(int id)
+        //GET: api/Teacher/5
+        public string Get(int id)
         {
-            return new Teacher(id);
+            return JsonConvert.SerializeObject(new Teacher(id));
         }
 
         // POST: api/Teacher
-        public void Post([FromBody] Teacher teacher)
+        public void Post(TempTeacher teacher) // Temp[Class], because [class] would update the corresponding Entry
         {
             object[] values = new object[] { teacher.Name, teacher.Short, teacher.Hours };
-            DB.Insert("Teachers", values);
+            DB.Insert(table, values); 
         }
 
-        // PUT: api/Teacher/5
-        public void Put(int id, [FromBody]string value)
+        // PUT: api/Teacher
+        public void Put(Teacher teacher) 
         {
-            object[] values = new object[] { value.Split(',') };
-            DB.Insert("Teachers", values);
+            
         }
 
         // DELETE: api/Teacher/5
         public void Delete(int id)
         {
-            DB.ExecuteQuery($"DELETE FROM Teachers WHERE ID = id;");
+            DB.Delete(table, id);
         }
+    }
+
+    public class TempTeacher
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public string Short { get; set; }
+        public int Hours { get; set; }
     }
 }
